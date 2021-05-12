@@ -1,0 +1,87 @@
+<%- include("_header") -%>
+
+  <form action="/sums" method="post">
+    <div class="form-horizontal">
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-2" for="start">Enter Starting Number</label>
+        <div class="col-sm-8">
+          <input autofocus class="form-control" id = "start" name = "start" type="number" />
+          <span>(Required) </span>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-2" for="end">Enter Ending Number</label>
+        <div class="col-sm-8">
+          <input autofocus class="form-control" id = "end" name = "end" type="number" /><span>(Required)</span>
+
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-2" for="increment">Enter Increment</label>
+        <div class="col-sm-8">
+          <input autofocus class="form-control" id = "increment" name = "increment"type="number" /><span>(Required)</span>
+        </div>
+      </div>
+
+
+      <div class="form-group row">
+        <label class="col-form-label col-sm-2"></label>
+        <div class="col-sm-10">
+          <input type="submit" value="Calculate Sum" class="btn btn-primary" />
+          <!-- <a class="btn btn-outline-dark cancel" href="/home">Reset</a> -->
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <%- include("_footer") -%>
+
+    <p id="result"></p>
+    <style>
+      .redbg{
+        background-color: red;
+      }
+    </style>
+    <script>
+      document.querySelector("form").addEventListener("submit", e => {
+        // Cancel default behavior of sending a synchronous POST request
+        e.preventDefault();
+        // Create a FormData object, passing the form as a parameter
+        const formData = new FormData(e.target);
+        // Send form data to the server with an asynchronous POST request
+        fetch("/sums", {
+          method: "POST",
+          body: formData
+        })
+          .then(response => response.text())
+          .then(data => {
+            console.log(data);
+            const paraElement = document.getElementById("result");
+            const resultElement = document.createElement("h2");
+            
+            const sumOfSeries = (startNumber, endNumber, increment) => {
+              var i;
+              var sum = 0;
+              if(startNumber < endNumber){
+              for (i = startNumber; i <= endNumber; i += increment) {
+                sum += i;
+          
+              }
+              resultElement.innerHTML = `The sum of the numbers from ${startNumber} to ${endNumber} incremented by ${increment} is ${sum}`;
+            } else{
+                resultElement.innerHTML =`Ending number must be less than starting number`
+                resultElement.classList.add("redbg")
+              }
+              return resultElement;
+            };
+            sumOfSeries(e.target.elements.start.value,e.target.elements.end.value,e.target.elements.increment.value );
+            paraElement.appendChild(resultElement);
+
+
+          })
+
+      });
+    </script>
